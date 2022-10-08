@@ -39,4 +39,9 @@ public class AccountServiceImpl implements AccountService {
       Account account=  accountRepository.findById(id);
       account.setAccountStatus(AccountStatus.DELETED);
     }
+
+    @Override
+    public Account retrieveBuId(UUID id) {
+        return accountRepository.findById(id);
+    }
 }
