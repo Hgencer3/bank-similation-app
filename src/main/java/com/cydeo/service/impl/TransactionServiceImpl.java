@@ -9,7 +9,6 @@ import com.cydeo.model.Account;
 import com.cydeo.model.Transaction;
 import com.cydeo.repository.AccountRepository;
 import com.cydeo.repository.TransactionRepository;
-import com.cydeo.service.AccountService;
 import com.cydeo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -107,5 +106,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         return  transactionRepository.lastTransactions();
         }
+
+    @Override
+    public List<Transaction> findTransactionById(UUID id) {
+        List<Transaction> transactionListById=transactionRepository.lastTransactionsById(id);
+
+        return transactionListById;
+    }
+
 
 }

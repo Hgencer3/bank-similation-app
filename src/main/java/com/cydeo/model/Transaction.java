@@ -17,4 +17,5 @@ public class Transaction {
     private String message;
     private Date creationDate;
 
+
 }
