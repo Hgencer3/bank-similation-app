@@ -1,47 +1,64 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.dto.AccountDTO;
+import com.cydeo.entity.Account;
 import com.cydeo.enums.AccountStatus;
 import com.cydeo.enums.AccountType;
-import com.cydeo.model.Account;
+import com.cydeo.mapper.AccountMapper;
 import com.cydeo.repository.AccountRepository;
 import com.cydeo.service.AccountService;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class AccountServiceImpl implements AccountService {
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
 
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper) {
         this.accountRepository = accountRepository;
-    }
-    @Override
-    public Account createNewAccount(BigDecimal balance, Date creationDate, AccountType accountType, Long userId, AccountStatus accountStatus) {
-        Account account=Account.builder().id(UUID.randomUUID())
-                .userId(userId).accountType(accountType).balance(balance)
-                .creationDate(creationDate).accountStatus(AccountStatus.ACTIVE).build();
-
-        return accountRepository.save(account);
+        this.accountMapper = accountMapper;
     }
 
     @Override
-    public List<Account> listAllAccount() {
+    public void createNewAccount(AccountDTO accountDTO) {
+        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
+        accountDTO.setCreationDate(new Date());
 
-        return accountRepository.findAll();
+        accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 
     @Override
-    public void deleteAccount(UUID id) {
-      Account account=  accountRepository.findById(id);
-      account.setAccountStatus(AccountStatus.DELETED);
+    public List<AccountDTO> listAllAccount() {
+        List<Account> accountList=accountRepository.findAll();
+        return accountList.stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Account retrieveBuId(UUID id) {
-        return accountRepository.findById(id);
+    public List<AccountDTO> listAllActiveAccount() {
+        List<Account> accountList=accountRepository.findAllByAccountStatus(AccountStatus.ACTIVE);
+        return accountList.stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAccount(Long id) {
+       Account account=accountRepository.findById(id).get();
+       account.setAccountStatus(AccountStatus.DELETED);
+       accountRepository.save(account);
+    }
+
+    @Override
+    public AccountDTO retrieveBuId(Long id) {
+
+        Account account=accountRepository.findById(id).get();
+        return accountMapper.convertToDTO(account);
+    }
+
+    @Override
+    public void updateAccount(AccountDTO accountDTO) {
+        accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 }

@@ -1,24 +1,23 @@
-package com.cydeo.model;
+package com.cydeo.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
 
-@Builder
-@Data
-public class Transaction {
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+public class TransactionDTO {
 
     @NotNull
-    private UUID sender;
+    private AccountDTO sender;
     @NotNull
-    private UUID receiver;
+    private AccountDTO receiver;
     @NotNull
     @Positive
     private BigDecimal amount;
